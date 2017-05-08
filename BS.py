@@ -1,16 +1,3 @@
-Skip to content
-Features Business Explore Pricing
-This repository
-Search
-Sign in or Sign up
- Watch 1  Star 1  Fork 0 leportella/tutorials
- Code  Issues 0  Pull requests 0  Projects 0  Pulse  Graphs
-Branch: master Find file Copy pathtutorials/scrapping/rotamarinha_v1_BeautifulSoup/scrap_urls.py
-7048b56  on 14 May 2016
-@leportella leportella scrapy testes
-1 contributor
-RawBlameHistory     
-38 lines (29 sloc)  901 Bytes
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
@@ -48,5 +35,5 @@ def FindArticles(url):
     return textopuro
 
 
-Contact GitHub API Training Shop Blog About
-© 2017 GitHub, Inc. Terms Privacy Security Status Help
+# Contact GitHub API Training Shop Blog About
+# © 2017 GitHub, Inc. Terms Privacy Security Status Help
