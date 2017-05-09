@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May  9 15:53:54 2017
+
+@author: jonas.oliveira2
+"""
+
+from bs4 import BeautifulSoup 
+import requests 
+from datetime import datetime 
+import csv 
+url = 'https://www.clark.wa.gov/sheriff/jail-roster' 
+response = requests.get(url) 
+html = response.content 
+soup = BeautifulSoup(html) 
+table = soup.find('table',attrs={'id':'jmsInfo'}) 
+rows = [] 
+for row in table.findAll('tr')[1:]: 
+    cells = [] 
+    if (row.contents[5].string and row.contents[2].string):
+        now = datetime.now() 
+        b_date = datetime.strptime(row.contents[2].string,"%m/%d/%Y") 
+        span = now - b_date 
+        cells.append(str(span.days)) 
+        cells.append(row.contents[5].string) 
+        rows.append(cells) 
+        outfile = open("./roster.csv", "wb") 
+writer = csv.writer(outfile) 
+writer.writerows(rows)
