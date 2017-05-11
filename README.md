@@ -1,2 +1,2 @@
-# TT
-BS4TT
+# Beautiful Soup
+Tentando achar notícias!
