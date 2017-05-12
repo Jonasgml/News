@@ -8,14 +8,32 @@ Created on Thu May 11 11:45:45 2017
 import re
 from bs4 import BeautifulSoup #essa biblioteca tem esse jeito de importar
 import requests 
+import pandas as pd
 
 # palavras pra procurar
 keywords = ['petrobras',
-            'temer']
+            'temer',
+            'moro']
 # sites onde procurar
 url = ['http://g1.globo.com/', 
-       'https://www.portosenavios.com.br/']
+       'https://www.portosenavios.com.br/',
+       'http://portal.antaq.gov.br/index.php/category/noticias/',
+       'http://www.jornalportuario.com.br/resumo-economico/transacoes-economicas-do-mes-de-maio#.WRX0zfkrK00',
+       'http://www.jornalportuario.com.br/ultimas-noticias#.WRX04fkrK00',
+       'http://www.portalnaval.com.br/',
+       'http://www.portalnaval.com.br/entrevista/',
+       'http://portosprivados.ibsweb.com.br/#',
+       'http://www.folha.uol.com.br/',
+       'http://www.estadao.com.br/',
+       'https://www.terra.com.br/',
+       'http://www.valor.com.br/',
+       'http://www.atribuna.com.br/porto-mar/',
+       'http://jcrs.uol.com.br/']
+
 links = []
+aux = []
+xls_file = pd.ExcelFile('links_PRUMO.xlsx')
+news = xls_file.parse(xls_file.sheet_names)
 # ******************************** fazer def
 # loop nos sites
 for site in url:
@@ -31,11 +49,26 @@ for site in url:
             # verifica se a palavra existe dentro desse tag
             if bool(re.search(r'\b{}\b'.format(key.lower()), anchor.text.lower())):
             # caso existir armazena o link associado
+                aux.append(site)
                 if site == 'https://www.portosenavios.com.br/':
+                    links.append(site[:-1] + anchor.get('href'))
+                elif site == 'http://www.valor.com.br/':
+                    links.append(site[:-1] + anchor.get('href'))
+                elif site == 'http://jcrs.uol.com.br/':
                     links.append(site[:-1] + anchor.get('href'))
                 else:
                     links.append(anchor.get('href'))   
 # ******************************** procurar palavras no texto completo
 # ******************************** procurar palavras em sub-páginas
-# ******************************** retirar links repetidos
-# ******************************** salvar arquivo com links
+# retira links repetidos
+news = list(set(links))
+news.sort()
+# salvar arquivo com links
+# Create a Pandas dataframe from the data.
+df = pd.DataFrame(news)
+# Create a Pandas Excel writer using XlsxWriter as the engine.
+writer = pd.ExcelWriter('links_PRUMO.xlsx', engine='xlsxwriter')
+# Convert the dataframe to an XlsxWriter Excel object.
+df.to_excel(writer, sheet_name='news')
+# Close the Pandas Excel writer and output the Excel file.
+writer.save()
