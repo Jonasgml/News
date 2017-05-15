@@ -11,9 +11,7 @@ import requests
 import pandas as pd
 
 # palavras pra procurar
-keywords = ['petrobras',
-            'temer',
-            'moro']
+keywords = ['petrobras']
 # sites onde procurar
 url = ['http://g1.globo.com/', 
        'https://www.portosenavios.com.br/',
@@ -32,6 +30,7 @@ url = ['http://g1.globo.com/',
 
 links = []
 aux = []
+aux_google = []
 xls_file = pd.ExcelFile('links_PRUMO.xlsx')
 news = xls_file.parse(xls_file.sheet_names)
 # ******************************** fazer def
@@ -40,26 +39,35 @@ for site in url:
 # ******************************** verificar data
     # pega o código fonte da página 
     page = requests.get(site)
+    
     # organiza o código com o parse escolhido
     soup = BeautifulSoup(page.content,'html5lib')
     # loop para as palavras a serem procuradas
     for key in keywords:
-        # loop na estrutura do código fonte para pegar todos tag "a" 
-        for anchor in soup.find_all("a"):
+            #loop de buscas no google
+            google = requests.get("https://news.google.com/news/section?q=" + key)
+            # organiza o código com o parse escolhido
+            googlesoup = BeautifulSoup(google.content,'html5lib')
+            for anchorgoogle in googlesoup.find_all("a"):
+                if bool(re.search(r'\b{}\b'.format(key.lower()), anchorgoogle.text.lower())):
+                    aux_google.append(anchorgoogle.get('href'))
+            # loop na estrutura do código fonte para pegar todos tag "a" 
+            for anchor in soup.find_all("a"):
             # verifica se a palavra existe dentro desse tag
-            if bool(re.search(r'\b{}\b'.format(key.lower()), anchor.text.lower())):
+                if bool(re.search(r'\b{}\b'.format(key.lower()), anchor.text.lower())):
             # caso existir armazena o link associado
-                aux.append(site)
-                if site == 'https://www.portosenavios.com.br/':
-                    links.append(site[:-1] + anchor.get('href'))
-                elif site == 'http://www.valor.com.br/':
-                    links.append(site[:-1] + anchor.get('href'))
-                elif site == 'http://jcrs.uol.com.br/':
-                    links.append(site[:-1] + anchor.get('href'))
-                else:
-                    links.append(anchor.get('href'))   
+                    aux.append(site)
+                    if site == 'https://www.portosenavios.com.br/':
+                        links.append(site[:-1] + anchor.get('href'))
+                    elif site == 'http://www.valor.com.br/':
+                        links.append(site[:-1] + anchor.get('href'))
+                    elif site == 'http://jcrs.uol.com.br/':
+                        links.append(site[:-1] + anchor.get('href'))
+                    else:
+                        links.append(anchor.get('href'))   
 # ******************************** procurar palavras no texto completo
 # ******************************** procurar palavras em sub-páginas
+links = links + aux_google
 # retira links repetidos
 news = list(set(links))
 news.sort()
